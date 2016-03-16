@@ -30,9 +30,25 @@ public abstract class CardCollection <T extends Card> implements Iterable<T> {
 
     @Override
     public Iterator<T> iterator() {
-        return cards.iterator(); //TODO this could be bad, not tested or used for now
-        //also this may expose the inner collection too much
-        //iterator returned is not typed
+        return new Iterator<T>() {
+            private final Iterator<T> iter = cards.iterator();
+            @Override
+            public boolean hasNext() {
+                return iter.hasNext();
+            }
+
+            @Override
+            public T next() {
+                return iter.next();
+            }
+
+            @Override
+            public void remove() {
+                throw new UnsupportedOperationException("no changes allowed, use the Deck api instead");
+            }
+            //TODO override forEachRemaining, not commonly used
+        };
+
     }
 
     // private for now, not sure if we should expose the list api,
@@ -77,7 +93,7 @@ public abstract class CardCollection <T extends Card> implements Iterable<T> {
         public Deck(){
             super();
             List<T> cards = super.getCards();
-            buildMiniDeck();
+            buildDeck();
         }
 
         /**
@@ -86,6 +102,7 @@ public abstract class CardCollection <T extends Card> implements Iterable<T> {
          * MODIFIES super.cards
          */
         public T drawRandom(){ // make generator static and use const seed for repeatability, good for testing, bad for cheating
+            //TODO change to drawTop() and shuffle deck on creation. That would make this more like a "real life" deck
             List<T> cards = super.getCards();
             Random randGen = new Random();
             int randIndex = randGen.nextInt(super.getSize());
@@ -155,7 +172,7 @@ public abstract class CardCollection <T extends Card> implements Iterable<T> {
             int index = -1;
             index = cards.indexOf(testCard);
             if(index == -1){
-                throw new UnsupportedOperationException("tried ti use card that is not in hand");
+                throw new UnsupportedOperationException("tried to use card that is not in hand");
             }
             cards.remove(index);
             return testCard; // we are returning test card, maybe safer to return actual card
