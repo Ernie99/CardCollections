@@ -44,7 +44,7 @@ public abstract class Card {
 
         @Override
         public String toString() {
-            String s = " Suit: " + getSuit().name() + ", Face: " + getFace().name();
+            String s = " Face: " + getFace().name() + ", Suit: " + getSuit().name();
             return s;
         }
     }

@@ -29,7 +29,7 @@ public abstract class CardCollection <T extends Card> implements Iterable<T> {
     private List<T> cards = new ArrayList<>();
 
     @Override
-    public Iterator<T> iterator() {
+    public Iterator<T> iterator() { // TODO think about this, api designed not to "peek" at cards without drawing, This gives us a back door to
         return new Iterator<T>() {
             private final Iterator<T> iter = cards.iterator();
             @Override
@@ -48,10 +48,23 @@ public abstract class CardCollection <T extends Card> implements Iterable<T> {
             }
             //TODO override forEachRemaining, not commonly used
         };
-
     }
 
-    // private for now, not sure if we should expose the list api,
+    /**
+     * draws random card and removes from deck
+     * @return card from deck
+     * MODIFIES super.cards
+     */
+    public T drawRandom(){ // make generator static and use const seed for repeatability, good for testing, bad for cheating
+        //TODO change to drawTop() and shuffle deck on creation. That would make this more like a "real life" deck
+        List<T> cards = getCards();
+        Random randGen = new Random();
+        int randIndex = randGen.nextInt(getSize());
+        T randomPick = cards.get(randIndex);
+        cards.remove(randIndex);
+        return randomPick;
+    }
+
     // or call methods with our own "convenience" api
     public int getSize(){
         return cards.size();
@@ -96,21 +109,6 @@ public abstract class CardCollection <T extends Card> implements Iterable<T> {
             buildDeck();
         }
 
-        /**
-         * draws random card and removes from deck
-         * @return card from deck
-         * MODIFIES super.cards
-         */
-        public T drawRandom(){ // make generator static and use const seed for repeatability, good for testing, bad for cheating
-            //TODO change to drawTop() and shuffle deck on creation. That would make this more like a "real life" deck
-            List<T> cards = super.getCards();
-            Random randGen = new Random();
-            int randIndex = randGen.nextInt(super.getSize());
-            T randomPick = cards.get(randIndex);
-            cards.remove(randIndex);
-            return randomPick;
-        }
-
         // helper to insert 52 unique cards
         // TODO this is bad, must change! we are making new FrenchCards and not T
         // TODO will use builder or factory pattern
@@ -144,7 +142,7 @@ public abstract class CardCollection <T extends Card> implements Iterable<T> {
         /**
          * initialized to an EMPTY HAND
          */
-        Hand(){
+        public Hand(){
             super();
         }
 
