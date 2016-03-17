@@ -58,44 +58,47 @@ public class War {
             } else{
 //                result = "WAR";
                 System.out.println("WAR");
-                drawWar(playerOneHand, playerTwoHand, playerOnePile, playerTwoPile);
+                List<Card.FrenchCard> warPile = new ArrayList<>();
+                int warWinner = drawWar(playerOneHand, playerTwoHand, warPile);
+                if(warWinner==1){
+                    addToPile(playerOnePile, warPile);
+                }else if(warWinner==2){
+                    addToPile(playerTwoPile, warPile);
+                }
             }
             System.out.println(result);
         }
+        System.exit(0);
     }
 
     //todo list loop invariants in comments
-    private static void drawWar(CardCollection.Hand<Card.FrenchCard> playerOneHand, CardCollection.Hand<Card.FrenchCard> playerTwoHand,
-                                CardCollection.Hand<Card.FrenchCard> playerOnePile, CardCollection.Hand<Card.FrenchCard> playerTwoPile){
-        List<Card.FrenchCard> warPile = new ArrayList<>();
+    private static int drawWar(CardCollection.Hand<Card.FrenchCard> playerOneHand, CardCollection.Hand<Card.FrenchCard> playerTwoHand, List<Card.FrenchCard> pile){
+//        List<Card.FrenchCard> warPile = new ArrayList<>();
         // we are using a *regular* java collection to hold cards // todo, think about this as it relates to design decisions
         for(int i=0; i<3; i++){
-            warPile.add(playerOneHand.drawRandom());
-            warPile.add(playerTwoHand.drawRandom());
+            pile.add(playerOneHand.drawRandom());
+            pile.add(playerTwoHand.drawRandom());
         }
-        Card.FrenchCard playerOneWarCard = playerOneHand.drawRandom();
+        Card.FrenchCard playerOneWarCard = playerOneHand.drawRandom(); // todo, clean this we can use last indexed in loop
         Card.FrenchCard playerTwoWarCard = playerTwoHand.drawRandom();
+        pile.add(playerOneWarCard); // todo, we can also do this in fewer steps, clear enough for now
+        pile.add(playerTwoWarCard);
 
         int weight1 = getCardWeight(playerOneWarCard);
-        int weight2 = getCardWeight(playerOneWarCard);
+        int weight2 = getCardWeight(playerTwoWarCard);
 
-        String result = "";
         if(weight1>weight2){
-            result = "player 1 wins this WAR";
-            addToPile(playerOnePile, warPile);
-            playerOnePile.addCard(playerOneWarCard);
-            playerOnePile.addCard(playerTwoWarCard);
-        } else if(weight2>weight1){
-            result= "player 2 this WAR";
-            addToPile(playerTwoPile, warPile);
-            playerTwoPile.addCard(playerOneWarCard);
-            playerTwoPile.addCard(playerTwoWarCard);
+            System.out.println("player 1 wins this WAR");
+            return 1;
+        } else if(weight2<weight1){
+            System.out.println("player 2 wins this WAR");
+            return 2;
         } else{
 //            result = "another war!";
             System.out.println("another war");// todo use more sensible logic for this println ordering
-            drawWar(playerOneHand, playerTwoHand, playerOnePile, playerTwoPile);
+            System.out.println("WEIGHTS= " + weight1 + " " + weight2);
+            return drawWar(playerOneHand, playerTwoHand, pile);
         }
-        System.out.println(result);
 
     }
 
