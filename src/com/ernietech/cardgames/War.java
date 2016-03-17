@@ -36,6 +36,7 @@ public class War {
 //        System.out.println(playerOneHand);
 //        System.out.println(playerTwoHand);
 
+        //todo BIG BIG BIG todo, we are repeating the logic in draw war, fix this!
         while(playerOneHand.getSize()!=0){ // really we should check both hands for empty, but since both players are drawing at the same time, this is ok
             Card.FrenchCard c1 = playerOneHand.drawRandom(); //// TODO again, draw random may not be best
             Card.FrenchCard c2 = playerTwoHand.drawRandom();
@@ -75,7 +76,11 @@ public class War {
     private static int drawWar(CardCollection.Hand<Card.FrenchCard> playerOneHand, CardCollection.Hand<Card.FrenchCard> playerTwoHand, List<Card.FrenchCard> pile){
 //        List<Card.FrenchCard> warPile = new ArrayList<>();
         // we are using a *regular* java collection to hold cards // todo, think about this as it relates to design decisions
-        for(int i=0; i<3; i++){
+        int cardsToWar = 3;
+        if(playerOneHand.getSize() < 4){ // if we are short on cards while in a war
+            cardsToWar = playerOneHand.getSize() - 1;
+        }
+        for(int i=0; i < cardsToWar; i++){
             pile.add(playerOneHand.drawRandom());
             pile.add(playerTwoHand.drawRandom());
         }
@@ -87,15 +92,17 @@ public class War {
         int weight1 = getCardWeight(playerOneWarCard);
         int weight2 = getCardWeight(playerTwoWarCard);
 
-        if(weight1>weight2){
+        System.out.println("war cards: " + "player 1 " + playerOneWarCard + " player 2 " + playerTwoWarCard);
+        if(weight1 > weight2){
             System.out.println("player 1 wins this WAR");
             return 1;
-        } else if(weight2<weight1){
+        } else if(weight1 < weight2){
             System.out.println("player 2 wins this WAR");
             return 2;
         } else{
 //            result = "another war!";
-            System.out.println("another war");// todo use more sensible logic for this println ordering
+            //todo not the best println, also repeats code
+            System.out.println("another war, tie on " + playerOneWarCard + " " + playerTwoWarCard);// todo use more sensible logic println ordering
             System.out.println("WEIGHTS= " + weight1 + " " + weight2);
             return drawWar(playerOneHand, playerTwoHand, pile);
         }

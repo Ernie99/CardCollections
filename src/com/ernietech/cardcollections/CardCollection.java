@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
+import static java.util.Collections.replaceAll;
 import static java.util.Collections.shuffle;
 
 /**
@@ -58,11 +59,9 @@ public abstract class CardCollection <T extends Card> implements Iterable<T> {
     public T drawRandom(){ // make generator static and use const seed for repeatability, good for testing, bad for cheating
         //TODO change to drawTop() and shuffle deck on creation. That would make this more like a "real life" deck
         List<T> cards = getCards();
-        Random randGen = new Random();
-        int randIndex = randGen.nextInt(getSize());
-        T randomPick = cards.get(randIndex);
-        cards.remove(randIndex);
-        return randomPick;
+        T pickedCard = cards.get(0);
+        cards.remove(0);
+        return pickedCard;
     }
 
     // or call methods with our own "convenience" api
@@ -120,7 +119,7 @@ public abstract class CardCollection <T extends Card> implements Iterable<T> {
                    cards.add((T) new Card.FrenchCard(s,f));
                 }
             }
-//            shuffle(cards);, we don't need since we draw at random
+            shuffle(cards);
         }
 
         //do not use! used to make small deck for testing
