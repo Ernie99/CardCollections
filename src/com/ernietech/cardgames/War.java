@@ -147,10 +147,10 @@ public class War {
                 weight=10;
                 break;
             case QUEEN:
-                weight=10;
+                weight=11;
                 break;
             case KING:
-                weight=10;
+                weight=12;
                 break;
         }
         return weight;
