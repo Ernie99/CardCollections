@@ -21,9 +21,10 @@ public class War {
         //main deck that we start with
         War game; // we can probably build these in
         for(int i = 0; i < 100; i++){
+            gameNumber++;
             game = new War();
             game.playGame();
-            gameNumber++;
+
         }
         System.exit(0);
     }
@@ -90,12 +91,19 @@ public class War {
             return 2;
         } else{
             System.out.println("tie");
-            int cardsToWar = 2; // really its two since the third card we turn over
-            if(playerOneHand.getSize() < 2){ // if we are short on cards while in a war
-                cardsToWar = playerOneHand.getSize() - 2;
+            int cardsToWaste = 0; // default is 2
+            int cardsInHandOne = playerOneHand.getSize();
+            if(cardsInHandOne >= 3){ // if we are short on cards while in a war
+                cardsToWaste = 2;
+            }else if(cardsInHandOne == 2){
+                cardsToWaste = 1;
+            }else if(cardsInHandOne == 1){
+                cardsToWaste = 0;
+            }else if(cardsInHandOne == 0){
+                return 0;
             }
 
-            for(int i=0; i < cardsToWar; i++){
+            for(int i=0; i < cardsToWaste; i++){
                 playerOneLastCard = playerOneHand.drawRandom();
                 playerTwoLastCard = playerTwoHand.drawRandom();
                 pile.add(playerOneLastCard);
