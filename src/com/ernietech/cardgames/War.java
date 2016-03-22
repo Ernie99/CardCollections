@@ -16,111 +16,102 @@ import java.util.List;
  * Just using this as a test for decks and cards, so all code is static, for simplicity
  */
 public class War {
-    static int repeatedWarCounter = 0; // our only public
 
     public static void main(String [] args){
         //main deck that we start with
+        War game; // we can probably build these in
         for(int i = 0; i < 100; i++){
-            playGame();
+            game = new War();
+            game.playGame();
+            gameNumber++;
         }
         System.exit(0);
     }
 
-    //todo list loop invariants in comments
-    private static int drawWar(CardCollection.Hand<Card.FrenchCard> playerOneHand, CardCollection.Hand<Card.FrenchCard> playerTwoHand, List<Card.FrenchCard> pile){
-//        List<Card.FrenchCard> warPile = new ArrayList<>();
-        // we are using a *regular* java collection to hold cards // todo, think about this as it relates to design decisions
-        repeatedWarCounter ++;
-        int cardsToWar = 3;
-        if(playerOneHand.getSize() < 2){ // if we are short on cards while in a war
-            cardsToWar = playerOneHand.getSize() - 2;
-        }
-        for(int i=0; i < cardsToWar; i++){
-            pile.add(playerOneHand.drawRandom());
-            pile.add(playerTwoHand.drawRandom());
-        }
-        Card.FrenchCard playerOneWarCard = playerOneHand.drawRandom(); // todo, clean this we can use last indexed in loop
-        Card.FrenchCard playerTwoWarCard = playerTwoHand.drawRandom();
-        pile.add(playerOneWarCard); // todo, we can also do this in fewer steps, clear enough for now
-        pile.add(playerTwoWarCard);
-
-        int weight1 = getCardWeight(playerOneWarCard);
-        int weight2 = getCardWeight(playerTwoWarCard);
-
-        System.out.println("war cards: " + "player 1 " + playerOneWarCard + " player 2 " + playerTwoWarCard);
-        if(weight1 > weight2){
-            System.out.println("player 1 wins this WAR");
-            return 1;
-        } else if(weight1 < weight2){
-            System.out.println("player 2 wins this WAR");
-            return 2;
-        } else{
-//            result = "another war!";
-            //todo not the best println, also repeats code
-            System.out.println("another war #" + repeatedWarCounter + " tie on " + playerOneWarCard + " " + playerTwoWarCard);// todo use more sensible logic println ordering
-            System.out.println("WEIGHTS= " + weight1 + " " + weight2);
-            return drawWar(playerOneHand, playerTwoHand, pile);
-        }
-    }
-
-    private static void playGame(){
-        CardCollection.Deck<Card.FrenchCard> deck = new CardCollection.Deck<Card.FrenchCard>();
-
-        //player hands
-        CardCollection.Hand<Card.FrenchCard> playerOneHand = new CardCollection.Hand<>();
-        CardCollection.Hand<Card.FrenchCard> playerTwoHand = new CardCollection.Hand<>();
-
-        //player point piles
-        CardCollection.Hand<Card.FrenchCard> playerOnePile = new CardCollection.Hand<>();
-        CardCollection.Hand<Card.FrenchCard> playerTwoPile = new CardCollection.Hand<>();
-
-        //deal two hands
+    public War(){
+        // deck is not a global because we consume all cards by dealing to hands
+        CardCollection.Deck<Card.FrenchCard> deck = new CardCollection.Deck<>();
+        playerOneHand = new CardCollection.Hand<>();
+        playerTwoHand = new CardCollection.Hand<>();
         while(deck.getSize() !=0 ){ // shouldn't throw because we have 2 players and even deck size
             playerOneHand.addCard(deck.drawRandom());
             playerTwoHand.addCard(deck.drawRandom());
         }
-//        System.out.println(playerOneHand);
-//        System.out.println(playerTwoHand);
-
-
-
-        //todo BIG todo, we are repeating the logic in draw war, fix code duplication!
-        while(playerOneHand.getSize() != 0){ // really we should check both hands for empty, but since both players are drawing at the same time, this is ok
-            Card.FrenchCard c1 = playerOneHand.drawRandom(); //// TODO again, draw random may not be best
-            Card.FrenchCard c2 = playerTwoHand.drawRandom();
-
-            String played = "player 1: " + c1 + " player 2: " + c2;
-            System.out.println(played);
-            String result = "";
-
-            int weight1 = getCardWeight(c1);
-            int weight2 = getCardWeight(c2);
-
-            if(weight1>weight2){
-                result = "player 1 wins";
-                playerOnePile.addCard(c1); // put both cards in player 1 pile
-                playerOnePile.addCard(c2);
-                repeatedWarCounter = 0;
-            } else if(weight2>weight1){
-                result= "player 2 wins";
-                playerTwoPile.addCard(c1); // put both cards in player 2 pile
-                playerTwoPile.addCard(c2);
-                repeatedWarCounter = 0;
-            } else{
-//                result = "WAR";
-                System.out.println("WAR");
-                List<Card.FrenchCard> warPile = new ArrayList<>();
-                int warWinner = drawWar(playerOneHand, playerTwoHand, warPile);
-                if(warWinner==1){
-                    addToPile(playerOnePile, warPile);
-                }else if(warWinner==2){
-                    addToPile(playerTwoPile, warPile);
-                }
-            }
-            System.out.println(result);
-        }
-
     }
+
+    public int playGame(){
+        List<Card.FrenchCard> playerOneWinPile= new ArrayList<>();
+        List<Card.FrenchCard> playerTwoWinPile= new ArrayList<>();
+        List<Card.FrenchCard> tempPile= null;
+        while(playerOneHand.getSize() != 0) { // really we should check both hands for empty, but since both players are drawing at
+            int handWinner = 0;
+            tempPile = new ArrayList<>();
+            handWinner = buildWinPile(playerOneHand, playerTwoHand, tempPile);
+            if(handWinner == 1){
+                playerOneWinPile.addAll(tempPile);
+            } else if(handWinner == 2){
+                playerTwoWinPile.addAll(tempPile);
+            }
+        }
+        int playerOneFinal = playerOneWinPile.size();
+        int playerTwoFinal = playerTwoWinPile.size();
+        int winner;
+        if(playerOneFinal > playerTwoFinal){
+            winner = 1;
+        }else if(playerOneFinal < playerTwoFinal){
+            winner = 2;
+        } else{
+            winner = 0; // tie
+        }
+        System.out.println("GAME: " + gameNumber +"**************game winner************** is: " + winner);
+        return winner;
+    }
+
+    // main logic for game, plays one hand, but is recursive when there is a tie (war)
+    // builds win pile and returns winner
+    // Always call with new EMPTY list, note: recursive calls uses non empty list
+    //returns winner, 0 for a tie, but this never happens since we keep on drawing
+    //todo remove playerOneHand and playerTwoHand params, they are private globals
+    private int buildWinPile(CardCollection.Hand<Card.FrenchCard> playerOneHand, CardCollection.Hand<Card.FrenchCard> playerTwoHand, List<Card.FrenchCard> pile){
+        Card.FrenchCard playerOneLastCard = playerOneHand.drawRandom();
+        Card.FrenchCard playerTwoLastCard = playerTwoHand.drawRandom();
+        int weight1 = getCardWeight(playerOneLastCard);
+        int weight2 = getCardWeight(playerTwoLastCard);
+        pile.add(playerOneLastCard); // two lines MODIFY the pile
+        pile.add(playerTwoLastCard);
+
+        System.out.println("CARDS: " + "player 1- " + playerOneLastCard + " player 2- " + playerTwoLastCard);
+
+        if(weight1 > weight2){
+            System.out.println("player 1 wins");
+            return 1;
+        } else if(weight1 < weight2){
+            System.out.println("player 2 wins");
+            return 2;
+        } else{
+            System.out.println("tie");
+            int cardsToWar = 2; // really its two since the third card we turn over
+            if(playerOneHand.getSize() < 2){ // if we are short on cards while in a war
+                cardsToWar = playerOneHand.getSize() - 2;
+            }
+
+            for(int i=0; i < cardsToWar; i++){
+                playerOneLastCard = playerOneHand.drawRandom();
+                playerTwoLastCard = playerTwoHand.drawRandom();
+                pile.add(playerOneLastCard);
+                pile.add(playerTwoLastCard);
+            }
+            return buildWinPile(playerOneHand, playerTwoHand, pile);
+        }
+    }
+
+    static int repeatedWarCounter = 0; // our only public
+    static int gameNumber = 0;
+
+    CardCollection.Hand<Card.FrenchCard> playerOneHand;
+    CardCollection.Hand<Card.FrenchCard> playerTwoHand;
+    List<Card.FrenchCard> playerOneWinPile= new ArrayList<>();
+    List<Card.FrenchCard> playerTwoWinPile= new ArrayList<>();
 
     //super small helper method
     private static void addToPile(CardCollection.Hand<Card.FrenchCard> playerPile, List<Card.FrenchCard> warPile){
