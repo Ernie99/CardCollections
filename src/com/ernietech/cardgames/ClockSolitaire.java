@@ -15,6 +15,7 @@ public class ClockSolitaire {
 
     public static void main(String [] args){
         ClockSolitaire theGame = new ClockSolitaire();
+        theGame.printPiles(true);
 
     }
 
@@ -23,6 +24,12 @@ public class ClockSolitaire {
         CardCollection.Deck<Card.FrenchCard> deck = new CardCollection.Deck<>();
         pilesFaceDown = new ArrayList<>(13); // 1 through 12 + center pile
         pilesFaceUp = new ArrayList<>(13); // 1 through 12 + center pile
+
+        //initialize EMPTY piles
+        for(int i = FACE_INDEX_ACE_START; i <= FACE_INDEX_KING_CENTER; i++){
+            pilesFaceDown.add(new ArrayList<Card.FrenchCard>());
+            pilesFaceUp.add(new ArrayList<Card.FrenchCard>());
+        }
 
         // NOTE: since arrays in java are zero-based clock values are one
         // less than array index
@@ -33,7 +40,7 @@ public class ClockSolitaire {
 
         while(deck.getSize() != 0){
             // draw from deck and add to each face down pile
-            pilesFaceUp.get(clockIndex).add(deck.drawRandom());
+            pilesFaceDown.get(clockIndex).add(deck.drawRandom());
             if (clockIndex == FACE_INDEX_KING_CENTER){
                 clockIndex = FACE_INDEX_ACE_START;
             } else {
@@ -43,9 +50,24 @@ public class ClockSolitaire {
     }
 
     // prints list of piles, uses array index to print clock position
-    static void printPiles(List<List<Card.FrenchCard>> toPrint){
-        
-        for(List<Card.FrenchCard> pile: toPrint){
+    void printPiles(boolean showFaceDown){
+
+        for(int i = 0; i < FACE_INDEX_KING_CENTER; i
+                ++){
+            System.out.println("CLOCK NUMBER: " + (i + 1)); // add 1 because zero indexed
+
+            System.out.println("face down pile...");
+            for(Card.FrenchCard c: pilesFaceUp.get(i)){
+                System.out.println(c);
+            }
+
+            if(showFaceDown){
+                System.out.println("face up pile...");
+                for(Card.FrenchCard c: pilesFaceDown.get(i)){
+                    System.out.println(c);
+                }
+            }
+
 
         }
     }
@@ -57,7 +79,7 @@ public class ClockSolitaire {
     private List<List<Card.FrenchCard>> pilesFaceUp;
 
     static final int FACE_INDEX_ACE_START = 0;
-    static final int FACE_INDEX_KING_CENTER = 12;
+    static final int FACE_INDEX_KING_CENTER = 12; // also the LAST index
 
 
 }
