@@ -165,14 +165,17 @@ public class War {
             case NINE:
                 weight=9;
                 break;
-            case JACK:
+            case TEN:
                 weight=10;
                 break;
-            case QUEEN:
+            case JACK:
                 weight=11;
                 break;
-            case KING:
+            case QUEEN:
                 weight=12;
+                break;
+            case KING:
+                weight=13;
                 break;
         }
         return weight;
