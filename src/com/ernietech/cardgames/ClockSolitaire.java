@@ -36,13 +36,16 @@ public class ClockSolitaire {
         // if we win the kingsForcedLoss flag will never be set
         // we check the conditions again after while loop to see which
         // condition terminated the game
+
+        int moves = 0;
         while((!theGame.kingsForcedLoss) && ( theGame.pilesFinished <= PILES_TO_WIN )){
             Card.FrenchCard pulled = theGame.drawClockCard(toDraw);
             theGame.putClockCard(pulled);
 
             toDraw = pulled.getFace();
+            moves++;
 
-            if(theGame.cardsAreLeft(toDraw)){
+            if(! theGame.cardsAreLeft(toDraw)){
                 if(toDraw == Face.KING){
                     theGame.kingsForcedLoss = true;
                 }
@@ -55,6 +58,8 @@ public class ClockSolitaire {
         }else{
             System.out.println("*******************YOU WIN");
         }
+
+        System.out.println("moves made: " + moves + " flags: " + theGame.kingsForcedLoss + " piles " + theGame.pilesFinished);
 
         theGame.printPiles(false);
 
@@ -129,9 +134,10 @@ public class ClockSolitaire {
         return;
     }
 
+    // check if cards are left in FACEDOWN pile
     boolean cardsAreLeft(Card.Face pileKey){
         int i = facePileIndexes.get(pileKey);
-        return !(pilesFaceUp.get(i).isEmpty());
+        return !(pilesFaceDown.get(i).isEmpty());
     }
 
 
@@ -157,7 +163,6 @@ public class ClockSolitaire {
                     System.out.println(c);
                 }
             }
-
 
         }
     }
