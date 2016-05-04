@@ -17,53 +17,20 @@ public class ClockSolitaire {
 
     public static void main(String [] args){
 
-        //TODO instead of calling on an ClockSolitaire object that we crate. Make
-        //all of this code internal to that class.
-        ClockSolitaire theGame = new ClockSolitaire();
-//        System.out.println("starting game cards are: ");
-//        theGame.printPiles(false);
-//
-//        System.out.println("MOVE 1: ");
-//        Card.FrenchCard c1 = theGame.drawClockCard(Face.KING);
-//        theGame.putClockCard(c1);
-//        System.out.println("card picked: " + c1.toString());
-//        theGame.printPiles(false);
+//        ClockSolitaire theGame = new ClockSolitaire();
 
-        //card to draw always starts with King
-        Card.Face toDraw = Face.KING;
+        int gamesToPlay = 1000;
+        int wins = 0;
+        int losses = 0;
 
-        // update pile counter at end. check for win at beginning
-        // if we win the kingsForcedLoss flag will never be set
-        // we check the conditions again after while loop to see which
-        // condition terminated the game
-
-        int moves = 0;
-        while((!theGame.kingsForcedLoss) && ( theGame.pilesFinished <= PILES_TO_WIN )){
-            Card.FrenchCard pulled = theGame.drawClockCard(toDraw);
-            theGame.putClockCard(pulled);
-
-            toDraw = pulled.getFace();
-            moves++;
-
-            if(! theGame.cardsAreLeft(toDraw)){
-                if(toDraw == Face.KING){
-                    theGame.kingsForcedLoss = true;
-                }
-                theGame.pilesFinished++;
+        for(int i = 0; i < gamesToPlay; i++){
+            if(new ClockSolitaire().playGame()){
+                wins++;
+            }else{
+                losses++;
             }
         }
-
-        if(theGame.kingsForcedLoss){
-            System.out.println("*******************YOU LOOSE");
-        }else{
-            System.out.println("*******************YOU WIN");
-        }
-
-        System.out.println("moves made: " + moves + " flags: " + theGame.kingsForcedLoss + " piles " + theGame.pilesFinished);
-
-        theGame.printPiles(false);
-
-
+        System.out.println("wins: " + wins + "losses: " + losses);
     }
 
     ClockSolitaire(){
@@ -115,6 +82,52 @@ public class ClockSolitaire {
                 clockIndex++;
             }
         }
+    }
+
+    ////////////////////////////////////////
+    // Methods to play game
+    ///////////////////////////////////////
+
+    boolean playGame(){
+        //card to draw always starts with King
+        Card.Face toDraw = Face.KING;
+
+        // update pile counter at end. check for win at beginning
+        // if we win the kingsForcedLoss flag will never be set
+        // we check the conditions again after while loop to see which
+        // condition terminated the game
+
+        int moves = 0;
+        while((!this.kingsForcedLoss) && ( this.pilesFinished <= PILES_TO_WIN )){
+            Card.FrenchCard pulled = this.drawClockCard(toDraw);
+            this.putClockCard(pulled);
+
+            toDraw = pulled.getFace();
+            moves++;
+
+            if(! this.cardsAreLeft(toDraw)){
+                if(toDraw == Face.KING){
+                    this.kingsForcedLoss = true;
+                }
+                this.pilesFinished++;
+            }
+        }
+
+        boolean won;
+
+        if(this.kingsForcedLoss){
+            System.out.println("*******************YOU LOOSE");
+            won = false;
+        }else{
+            System.out.println("*******************YOU WIN");
+            won = true;
+        }
+
+        System.out.println("moves made: " + moves + " flags: " + this.kingsForcedLoss + " piles " + this.pilesFinished);
+
+        this.printPiles(false);
+
+        return won;
     }
 
     ////////////////////////////////////////
